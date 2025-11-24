@@ -180,6 +180,28 @@ public class MainTest {
         assertFalse("findSimilar should not recommend selected page", out.contains(" 1. " + selectedTitle) || out.contains(" 2. " + selectedTitle));
     }
     @Test
+    public void FS2() throws Exception {
+        //self exclusion check: selected page itself is not in results
+        writeUrlsFile("https://en.wikipedia.org/wiki/Test_automation\n" +
+            "https://en.wikipedia.org/wiki/JUnit\n" +
+            "https://en.wikipedia.org/wiki/Regression_testing\n");
+
+        Main main = new Main();
+
+        JComboBox<String> dropdown = getField(main, "dropdown", JComboBox.class);
+        JTextArea results = getField(main, "results", JTextArea.class);
+        List<?> pages = getField(main, "pages", List.class);
+
+        assertEquals(2, pages.size());
+    }
+    @Test
+    public void FS3() throws Exception {
+        writeUrlsFile("");//empty url file
+
+        Main main = new Main();
+
+    }
+    @Test
     public void FS4() throws Exception {
     //arrange: only one URL
         writeUrlsFile("https://en.wikipedia.org/wiki/JUnit\n");
