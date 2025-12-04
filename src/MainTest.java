@@ -200,6 +200,13 @@ public class MainTest {
 
         Main main = new Main();
 
+        JComboBox<String> dropdown = getField(main, "dropdown", JComboBox.class);
+        List<?> pages = getField(main, "pages", List.class);
+        JTextArea results = getField(main, "results", JTextArea.class);
+
+        assertEquals(0, pages.size());
+        assertEquals(0, dropdown.getItemCount());
+        assertEquals("Select page and click Find Similar", results.getText());
     }
     @Test
     public void FS4() throws Exception {
