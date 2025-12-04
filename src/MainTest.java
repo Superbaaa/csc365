@@ -128,12 +128,46 @@ public class MainTest {
         assertEquals(3, result.getCount("world"));
         assertEquals(3, result.getCount("hello"));
     }
-    
-
     //calculateTFIDF test cases:
     @Test
-    public void TF1() {
+    public void TF1() throws Exception {
         //Normal calculation
+        Main main = new Main();
+
+
+        HT wordCounts = new HT();
+        wordCounts.add("java");
+        wordCounts.add("java");
+        wordCounts.add("java");
+        wordCounts.add("python");
+        wordCounts.add("python");
+        wordCounts.add("csharp");
+        // 3 2 1 = 6
+        HT wordInDoc = new HT();
+        wordInDoc.add("java");
+        wordInDoc.add("java");
+        wordInDoc.add("python");
+        wordInDoc.add("csharp");
+        wordInDoc.add("csharp");
+        wordInDoc.add("csharp");
+
+        setField(main,"totalDocs",3);
+        setField(main,"wordInDoc",wordInDoc);
+
+        //tf = freq/totalWords, idf = log(totalDocs/docsWithWord)
+        HT tfidf = main.calculateTFIDF(wordCounts);
+
+        Double javaScore = (Double)  tfidf.get("java");
+        Double pythonScore = (Double)  tfidf.get("python");
+        Double csharpScore = (Double)  tfidf.get("csharp");
+
+        assertNotNull("java score should not be null", javaScore);
+        assertNotNull("python score should not be null", pythonScore);
+        assertNotNull("csharp score should not be null", csharpScore);
+
+        assertEquals(0.2027, javaScore, 0.001);
+        assertEquals(0.3662, pythonScore, 0.001);
+        assertEquals(0.0, csharpScore, 0.001);
 
     }
 
@@ -145,7 +179,7 @@ public class MainTest {
         HT wordCounts = new HT();
         HT tfidf = main.calculateTFIDF(wordCounts);
         assertEquals(0, tfidf.getCount(tfidf));
-        
+
     }
 
     //similarity method test cases:
@@ -154,7 +188,54 @@ public class MainTest {
         //identical vectors, non-empty HTs
         Main main = new Main();
 
+        HT tfidf1 = new HT();
+        tfidf1.add("apple",0.5);
+        tfidf1.add("banana",0.3);
+        tfidf1.add("orange",0.2);
+
+        HT tfidf2 = new HT();
+        tfidf2.add("apple",0.5);
+        tfidf2.add("banana",0.3);
+        tfidf2.add("orange",0.2);
+
+        double similarity = main.similarity(tfidf1, tfidf2);
+
+        assertEquals(1.0, similarity, 0.001);
     }
+
+    @Test
+    public void S2() {
+        //empty HTs
+        Main main = new Main();
+
+        HT empty1 = new HT();
+        HT empty2 = new HT();
+
+        double similarity = main.similarity(empty1, empty2);
+
+        assertEquals(0, similarity, 0.001);
+    }
+
+@Test
+    public void S3() {
+        //orthogonal vectors, non-empty HTs
+        Main main = new Main();
+
+        HT tfidf1 = new HT();
+        tfidf1.add("apple",0.5);
+        tfidf1.add("banana",0.3);
+        tfidf1.add("orange",0.2);
+
+        HT tfidf2 = new HT();
+        tfidf2.add("apple",0.2);
+        tfidf2.add("banana",0.7);
+        tfidf2.add("orange",0.5);
+
+        double similarity = main.similarity(tfidf1, tfidf2);
+
+        assertEquals(0.7530, similarity, 0.001);
+    }
+    
 
 
     //findSimilar method test cases:
